@@ -105,5 +105,28 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+
+
+    /**
+     * Collects all activities of a user (comments and likes on their posts)
+     * @param userId The ID of the user
+     * @return List of all user activities, or null if there are no posts
+     */
+    public List<Object> getUserActivityById(Long userId) {
+        // Retrieve all post IDs of the user
+        List<Long> postIds = postRepository.findTopByUserId(userId);
+        if(postIds.isEmpty()) {
+            return null;
+        }
+        // Collect comments and likes on the user's posts
+        List<Object> comments = commentRepository.findUserCommentsByPostId(postIds);
+        List<Object> likes = likeRepository.findUserLikesByPostId(postIds);
+        // Combine all activities into one list
+        List<Object> results = new ArrayList<>();
+        results.addAll(comments);
+        results.addAll(likes);
+        return results;
+    }
+
    
 }
